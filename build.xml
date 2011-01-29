@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- ANT -->
+<project name="Logica OpenSMPP SMSC Simulator" default="jar">
+
+  <path id="classpath">
+    <fileset dir="lib" includes="**/*.jar" />
+  </path>
+
+  <target name="compile">
+    <mkdir dir="build/classes"/>
+    <javac classpathref="classpath"
+	   srcdir="."
+	   destdir="build/classes"
+	   includeantruntime="false"/>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="build/jar" />
+    <jar destfile="build/jar/smscsim.jar" basedir="build/classes" />
+  </target>
+
+</project>
+
