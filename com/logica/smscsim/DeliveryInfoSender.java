@@ -87,6 +87,7 @@ public class DeliveryInfoSender extends ProcessingThread
         DeliverSM deliver = new DeliverSM();
         deliver.setSourceAddr(submit.getDestAddr());
         deliver.setDestAddr(submit.getDestAddr());
+	deliver.setEsmClass((byte)0x04);
         String msg = "";
         msg += "id:" + entry.messageId + " ";
         msg += "sub:" + entry.sub + " ";
