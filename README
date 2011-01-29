@@ -1,0 +1,15 @@
+Build Instructions
+==================
+* Place smpp.jar in lib/  <https://github.com/cornet/logica-smpp>
+$ ant
+
+
+Running the Simulator
+=====================
+$ cd build/jar
+$ java -cp smscsim.jar:../../lib/smpp.jar com.logica.smscsim.Simulator
+
+* Hit `1` to start he simulator
+* Enter a port number
+* See users.txt for user/pass
+
