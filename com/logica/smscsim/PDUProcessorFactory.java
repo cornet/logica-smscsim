@@ -10,8 +10,6 @@
  */
 package com.logica.smscsim;
 
-import com.logica.smscsim.PDUProcessorGroup;
-
 /**
  * Descandants of this class are passed to <code>SMSCListener</code> for
  * generating instancies of classes derived from <code>PDUProcessor</code>.

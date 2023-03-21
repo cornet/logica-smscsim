@@ -13,7 +13,6 @@ package com.logica.smscsim;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import com.logica.smpp.pdu.SubmitSM;
-import com.logica.smscsim.ShortMessageValue;
 
 /**
  * Class <code>ShortMessageStore</code> is used to store the sms's sent by

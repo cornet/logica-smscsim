@@ -10,7 +10,6 @@
  */
 package com.logica.smscsim;
 
-import java.util.Hashtable;
 import com.logica.smpp.*;
 import com.logica.smpp.SmppObject;
 import com.logica.smpp.debug.Debug;

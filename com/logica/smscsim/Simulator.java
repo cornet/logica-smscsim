@@ -11,14 +11,10 @@
 package com.logica.smscsim;
 
 import java.io.*;
-import java.util.*;
-
 import com.logica.smpp.debug.*;
 import com.logica.smpp.SmppObject;
 import com.logica.smpp.pdu.DeliverSM;
 import com.logica.smpp.pdu.WrongLengthOfStringException;
-import com.logica.smscsim.SimulatorPDUProcessor;
-import com.logica.smscsim.SimulatorPDUProcessorFactory;
 import com.logica.smscsim.util.BasicTableParser;
 import com.logica.smscsim.util.Table;
 
@@ -72,7 +68,12 @@ public class Simulator
     /**
      * Name of file with user (client) authentication information.
      */
-    static String usersFileName = "users.txt";
+    String usersFileName = "users.txt";  
+    
+    /**
+     * Smpp port
+     */
+    int smppPort = 0;
 
     /**
      * Directory for creating of debug and event files.
@@ -105,9 +106,17 @@ public class Simulator
     private Table users = null;
     private boolean displayInfo = true;
 
-    private Simulator()
+    // public Simulator()
+    // {
+
+    // }
+
+    public Simulator(int smppPort, String userFile)
     {
+        this.smppPort = smppPort;
+        this.usersFileName = userFile;
     }
+
 
     /**
      * The main function of the application displays menu with available
@@ -123,81 +132,22 @@ public class Simulator
         debug.deactivate(SmppObject.DPDUD);
         debug.deactivate(SmppObject.DCOMD);
         debug.deactivate(DSIMD2);
-        Simulator menu = new Simulator();
-        menu.menu();
-    }
-    
-    /**
-     * Displays menu with available simulator options such as starting and
-     * stopping listener, listing all currently connected clients,
-     * sending of a message to a client, listing all received messages
-     * and reloading of user (client) definition file.
-     */
-    protected void menu() throws IOException
-    {
-        debug.write("simulator started");
 
-        keepRunning = true;
-        String option = "1";
-        int optionInt;
-        
-        while (keepRunning) {
-            System.out.println();
-            System.out.println("- 1 start simulation");
-            System.out.println("- 2 stop simulation");
-            System.out.println("- 3 list clients");
-            System.out.println("- 4 send message"); 
-            System.out.println("- 5 list messages");
-            System.out.println("- 6 reload users file");
-            System.out.println("- 7 log to screen "+
-			       (displayInfo ? "off":"on"));
-            System.out.println("- 0 exit");
-            System.out.print("> ");
-            optionInt = -1;
-            try {
-                option = keyboard.readLine();
-                optionInt = Integer.parseInt(option);
-            } catch (Exception e) {
-                debug.write("exception reading keyboard " + e);
-                optionInt = -1;
-            }
-            switch (optionInt) {
-            case 1:
-                start();
-                break;
-            case 2:
-                stop();
-                break;
-            case 3:
-                listClients();
-                break;
-            case 4:
-                sendMessage();
-                break;
-            case 5:
-                messageList();
-                break;
-            case 6:
-                reloadUsers();
-                break;
-            case 7:
-                logToScreen();
-                break;
-            case 0:
-                exit();
-                break;
-            case -1:
-                // default option if entering an option went wrong
-                break;
-            default:
-                System.out.println("Invalid option. Choose between 0 and 6.");
-                break;
-            }
+        if (args.length != 2) {
+            System.out.println("error: <smpp port number> and <path of users.txt> expected as cmdline args\n");
+            System.exit(-1);
         }
+        
+    
+        int smppPort = Integer.parseInt(args[0]);
+        String usersFile = args[1];
 
-        System.out.println("Exiting simulator.");
-        debug.write("simulator exited.");
+        Simulator simulator = new Simulator(smppPort, usersFile);
+
+
+        simulator.start();
     }
+
 
     /**
      * Permits a user to choose the port where to listen on and then creates and
@@ -206,13 +156,10 @@ public class Simulator
      * and this instance is passed to the <code>SMSCListener</code> which is started
      * just after.
      */
-    protected void start() throws IOException
+    public void start() throws IOException
     {
         if (smscListener == null) {
-            System.out.print("Enter port number> ");
-            int port = Integer.parseInt(keyboard.readLine());
-            System.out.print("Starting listener... ");
-            smscListener = new SMSCListener(port,true);
+            smscListener = new SMSCListener(smppPort,true);
             processors = new PDUProcessorGroup();
             messageStore = new ShortMessageStore();
             deliveryInfoSender = new DeliveryInfoSender();
@@ -223,7 +170,10 @@ public class Simulator
 	    factory.setDisplayInfo(displayInfo);
             smscListener.setPDUProcessorFactory(factory);
             smscListener.start();
-            System.out.println("started.");
+            System.out.println();
+            System.out.println(String.format("%s SMPP simulator started on port %d \n",
+                FileLog.getLineTimeStamp(),    
+                smppPort));
         } else {
             System.out.println("Listener is already running.");
         }
